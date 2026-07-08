@@ -11,7 +11,7 @@ function Home() {
   useEffect(() => {
     const fetchEvents = async () => {
       try {
-        const response = await axios.get('http://localhost:5000/api/events');
+        const response = await axios.get('https://eventwave-t6v4.onrender.com/api/events');
         setEvents(response.data);
       } catch (error) {
         console.error('Error fetching events:', error);
@@ -23,7 +23,7 @@ function Home() {
 
   const handleDelete = async (id) => {
     try {
-      await axios.delete(`http://localhost:5000/api/events/${id}`);
+      await axios.delete(`https://eventwave-t6v4.onrender.com/api/events/${id}`);
       setEvents(events.filter(event => (event._id || event.id) !== id));
       toast.info('Event deleted successfully!');
     } catch (error) {
@@ -83,7 +83,7 @@ function AddEvent() {
         date: formData.date,
         location: formData.location
       };
-      await axios.post('http://localhost:5000/api/events', payload);
+      await axios.post('https://eventwave-t6v4.onrender.com/api/events', payload);
       toast.success('Event added successfully!');
       navigate('/');
     } catch (error) {
