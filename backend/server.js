@@ -3,7 +3,8 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 require('dotenv').config();
 
-const Event = require('./models/Event'); 
+const Event = require('./models/Event');
+const authRoutes = require('./routes/auth'); 
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -19,6 +20,9 @@ app.use(express.json());
 mongoose.connect(process.env.MONGO_URI)
   .then(() => console.log('MongoDB is connected successfully! 🎉'))
   .catch((err) => console.log('MongoDB connection error:', err));
+
+// Auth Routes
+app.use('/api/auth', authRoutes);
 
 // 1. Create Event (POST)
 app.post('/api/events', async (req, res) => {

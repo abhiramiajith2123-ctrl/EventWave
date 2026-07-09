@@ -1,7 +1,10 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import { toast } from 'react-toastify';
 
 const Register = () => {
+  const navigate = useNavigate();
   const [role, setRole] = useState('student'); // 'student' or 'admin'
   const [formData, setFormData] = useState({
     fullName: '',
@@ -26,10 +29,17 @@ const Register = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(`Registering as ${role}`, formData);
-    // Add backend integration here later
+    try {
+      const payload = { ...formData, role };
+      const response = await axios.post('https://eventwave-t6v4.onrender.com/api/auth/register', payload);
+      toast.success(response.data.message || 'Registration successful!');
+      navigate('/login');
+    } catch (error) {
+      console.error('Registration error:', error);
+      toast.error(error.response?.data?.message || 'Failed to register. Please try again.');
+    }
   };
 
   return (

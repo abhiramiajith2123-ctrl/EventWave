@@ -1,7 +1,10 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import { toast } from 'react-toastify';
 
 const Login = () => {
+  const navigate = useNavigate();
   const [role, setRole] = useState('student'); // 'student' or 'admin'
   const [formData, setFormData] = useState({
     registerNumber: '',
@@ -13,10 +16,17 @@ const Login = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(`Logging in as ${role}`, formData);
-    // Add backend integration here later
+    try {
+      const payload = { ...formData, role };
+      const response = await axios.post('https://eventwave-t6v4.onrender.com/api/auth/login', payload);
+      toast.success(response.data.message || 'Login successful!');
+      navigate('/');
+    } catch (error) {
+      console.error('Login error:', error);
+      toast.error(error.response?.data?.message || 'Invalid credentials. Please try again.');
+    }
   };
 
   return (
