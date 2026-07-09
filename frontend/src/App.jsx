@@ -4,6 +4,8 @@ import axios from 'axios';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import './App.css';
+import Login from './pages/Login';
+import Register from './pages/Register';
 
 function Home() {
   const [events, setEvents] = useState([]);
@@ -197,6 +199,12 @@ function App() {
             <li>
               <Link to="/add-event" style={{ color: 'white', textDecoration: 'none', fontWeight: 'bold' }}>Add Event</Link>
             </li>
+            <li>
+              <Link to="/login" style={{ color: 'white', textDecoration: 'none', fontWeight: 'bold' }}>Login</Link>
+            </li>
+            <li>
+              <Link to="/register" style={{ color: 'white', textDecoration: 'none', fontWeight: 'bold' }}>Register</Link>
+            </li>
           </ul>
         </nav>
         
@@ -204,6 +212,8 @@ function App() {
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/add-event" element={<AddEvent />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
           </Routes>
         </div>
       </div>
