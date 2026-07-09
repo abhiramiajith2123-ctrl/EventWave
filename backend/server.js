@@ -38,7 +38,7 @@ app.post('/api/events', async (req, res) => {
 // 2. Get All Events (GET)
 app.get('/api/events', async (req, res) => {
   try {
-    const events = await Event.find();
+    const events = await Event.find().populate('registeredStudents', 'fullName registerNumber department');
     res.status(200).json(events);
   } catch (error) {
     res.status(500).json({ message: "Events edukkan pattiyailla", error });
@@ -62,6 +62,32 @@ app.delete('/api/events/:id', async (req, res) => {
     res.status(200).json({ message: "Event successfully deleted!" });
   } catch (error) {
     res.status(500).json({ message: "Event delete cheyyan pattiyailla", error });
+  }
+});
+
+// 5. Register for Event
+app.post('/api/events/:id/register', async (req, res) => {
+  const { studentId } = req.body;
+  try {
+    if (!studentId) {
+      return res.status(400).json({ message: "Student ID is required" });
+    }
+
+    const event = await Event.findById(req.params.id);
+    if (!event) {
+      return res.status(404).json({ message: "Event not found" });
+    }
+
+    if (event.registeredStudents.includes(studentId)) {
+      return res.status(400).json({ message: "You are already registered for this event" });
+    }
+
+    event.registeredStudents.push(studentId);
+    await event.save();
+    
+    res.status(200).json({ message: "Successfully registered for the event!" });
+  } catch (error) {
+    res.status(500).json({ message: "Registration failed", error });
   }
 });
 

@@ -1,9 +1,37 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import { toast } from 'react-toastify';
 
 const StudentDashboard = () => {
   const user = JSON.parse(localStorage.getItem('user')) || {};
   const navigate = useNavigate();
+  const [registeredEvents, setRegisteredEvents] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchRegisteredEvents = async () => {
+      try {
+        const response = await axios.get('https://eventwave-t6v4.onrender.com/api/events');
+        // Filter events where this user's ID is in the registeredStudents array
+        const myEvents = response.data.filter(event => 
+          event.registeredStudents.some(student => student._id === user.id || student === user.id)
+        );
+        setRegisteredEvents(myEvents);
+      } catch (error) {
+        console.error('Error fetching events:', error);
+        toast.error('Failed to load registered events.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (user.id) {
+      fetchRegisteredEvents();
+    } else {
+      setLoading(false);
+    }
+  }, [user.id]);
 
   const handleLogout = () => {
     localStorage.removeItem('user');
@@ -46,16 +74,13 @@ const StudentDashboard = () => {
                 <ul className="space-y-3 text-sm text-gray-600">
                   <li className="flex justify-between">
                     <span className="font-medium text-gray-500">Department</span>
-                    <span>{user.department || 'N/A'}</span>
+                    <span className="font-semibold text-gray-800">{user.department || 'N/A'}</span>
                   </li>
                   <li className="flex justify-between">
                     <span className="font-medium text-gray-500">Batch</span>
-                    <span>{user.batch || 'N/A'}</span>
+                    <span className="font-semibold text-gray-800">{user.batch || 'N/A'}</span>
                   </li>
                 </ul>
-                <button className="mt-6 w-full text-blue-600 bg-blue-50 hover:bg-blue-100 py-2 rounded-lg font-medium transition-colors">
-                  Edit Profile
-                </button>
               </div>
             </div>
           </div>
@@ -68,19 +93,34 @@ const StudentDashboard = () => {
                 <Link to="/" className="text-sm text-blue-600 hover:text-blue-800 font-medium">Browse Events</Link>
               </div>
               
-              {/* Placeholder for Events */}
-              <div className="flex flex-col items-center justify-center py-16 text-center border-2 border-dashed border-gray-200 rounded-xl bg-gray-50/50">
-                <svg className="mx-auto h-12 w-12 text-gray-400 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                </svg>
-                <h4 className="text-lg font-medium text-gray-900">No events registered yet</h4>
-                <p className="mt-1 text-sm text-gray-500 max-w-sm">
-                  You haven't registered for any upcoming campus events. Browse the events page to get started.
-                </p>
-                <Link to="/" className="mt-6 bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-6 rounded-lg transition-colors shadow-sm">
-                  Find Events
-                </Link>
-              </div>
+              {loading ? (
+                <div className="flex justify-center py-12"><p className="text-gray-500">Loading events...</p></div>
+              ) : registeredEvents.length === 0 ? (
+                <div className="flex flex-col items-center justify-center py-16 text-center border-2 border-dashed border-gray-200 rounded-xl bg-gray-50/50">
+                  <svg className="mx-auto h-12 w-12 text-gray-400 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                  </svg>
+                  <h4 className="text-lg font-medium text-gray-900">No events registered yet</h4>
+                  <p className="mt-1 text-sm text-gray-500 max-w-sm">
+                    You haven't registered for any upcoming campus events. Browse the events page to get started.
+                  </p>
+                  <Link to="/" className="mt-6 bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-6 rounded-lg transition-colors shadow-sm">
+                    Find Events
+                  </Link>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {registeredEvents.map(event => (
+                    <div key={event._id} className="p-4 border border-gray-100 rounded-xl hover:shadow-md transition-shadow bg-blue-50/30">
+                      <h4 className="font-bold text-gray-900">{event.title}</h4>
+                      <p className="text-sm text-gray-600 mt-1 flex items-center gap-4">
+                        <span><strong className="text-gray-500">Date:</strong> {new Date(event.date).toLocaleDateString()}</span>
+                        <span><strong className="text-gray-500">Location:</strong> {event.location}</span>
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
 

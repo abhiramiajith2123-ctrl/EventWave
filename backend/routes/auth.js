@@ -78,7 +78,16 @@ router.post('/login', async (req, res) => {
         return res.status(400).json({ message: "Invalid Register Number or Password" });
       }
 
-      return res.status(200).json({ message: "Login successful", user: { id: student._id, registerNumber: student.registerNumber, fullName: student.fullName } });
+      return res.status(200).json({ 
+        message: "Login successful", 
+        user: { 
+          id: student._id, 
+          registerNumber: student.registerNumber, 
+          fullName: student.fullName,
+          department: student.department,
+          batch: student.batch
+        } 
+      });
 
     } else if (role === 'admin') {
       const admin = await Admin.findOne({ email });

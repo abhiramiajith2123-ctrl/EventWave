@@ -11,36 +11,52 @@ import AdminDashboard from './pages/AdminDashboard';
 import ProtectedRoute from './components/ProtectedRoute';
 
 function Home() {
-  const dummyEvents = [
-    {
-      id: 1,
-      title: "Tech Symposium 2026",
-      date: "2026-08-15",
-      location: "Main Auditorium",
-      description: "Join us for an exciting day of tech talks, workshops, and networking with industry leaders.",
-    },
-    {
-      id: 2,
-      title: "Cultural Fest: Rhythm & Hues",
-      date: "2026-09-20",
-      location: "Open Air Theatre",
-      description: "Experience a vibrant celebration of art, music, and dance from diverse cultures across the globe.",
-    },
-    {
-      id: 3,
-      title: "Startup Pitch Competition",
-      date: "2026-10-05",
-      location: "Innovation Hub",
-      description: "Got a groundbreaking idea? Pitch it to top investors and win seed funding for your startup.",
-    },
-    {
-      id: 4,
-      title: "Annual Sports Meet",
-      date: "2026-11-12",
-      location: "University Sports Complex",
-      description: "Compete in various track and field events and cheer for your department to win the championship trophy.",
+  const [events, setEvents] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const user = JSON.parse(localStorage.getItem('user'));
+  const role = localStorage.getItem('role');
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchEvents = async () => {
+      try {
+        const response = await axios.get('https://eventwave-t6v4.onrender.com/api/events');
+        setEvents(response.data);
+      } catch (error) {
+        console.error('Error fetching events:', error);
+        toast.error('Failed to fetch events from the server.');
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchEvents();
+  }, []);
+
+  const handleRegisterForEvent = async (eventId) => {
+    if (!user || role !== 'student') {
+      toast.info('Please log in as a student to register for events.');
+      navigate('/login');
+      return;
     }
-  ];
+
+    try {
+      await axios.post(`https://eventwave-t6v4.onrender.com/api/events/${eventId}/register`, {
+        studentId: user.id
+      });
+      toast.success('Successfully registered for the event!');
+      
+      // Update local state to reflect registration
+      setEvents(events.map(event => {
+        if (event._id === eventId) {
+          return { ...event, registeredStudents: [...(event.registeredStudents || []), user.id] };
+        }
+        return event;
+      }));
+    } catch (error) {
+      console.error('Registration error:', error);
+      toast.error(error.response?.data?.message || 'Failed to register for the event.');
+    }
+  };
 
   return (
     <div className="bg-gray-50 min-h-screen pb-12">
@@ -54,14 +70,14 @@ function Home() {
           <p className="mt-4 text-lg sm:text-xl text-blue-100 max-w-2xl mx-auto mb-10">
             EventWave is your premier platform to explore, register, and manage upcoming activities at your college. Never miss out on what's happening!
           </p>
-          <button className="bg-white text-indigo-700 font-bold py-3 px-8 rounded-full shadow-lg hover:bg-gray-100 hover:scale-105 transition-transform duration-300">
+          <a href="#events" className="bg-white text-indigo-700 font-bold py-3 px-8 rounded-full shadow-lg hover:bg-gray-100 hover:scale-105 transition-transform duration-300 inline-block">
             Explore Events
-          </button>
+          </a>
         </div>
       </section>
 
       {/* Upcoming Events Section */}
-      <section className="py-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+      <section id="events" className="py-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
         <div className="mb-12 text-center">
           <h2 className="text-3xl font-extrabold text-gray-900 tracking-tight sm:text-4xl">
             Upcoming Events
@@ -71,167 +87,91 @@ function Home() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-          {dummyEvents.map((event) => (
-            <div key={event.id} className="bg-white rounded-2xl shadow-md hover:shadow-xl transition-shadow duration-300 overflow-hidden border border-gray-100 flex flex-col">
-              <div className="h-48 bg-gradient-to-br from-gray-200 to-gray-300 flex items-center justify-center">
-                 <svg className="w-16 h-16 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-              </div>
-              <div className="p-6 flex-1 flex flex-col">
-                <h3 className="text-xl font-bold text-gray-900 mb-2 line-clamp-1">{event.title}</h3>
-                
-                <div className="flex items-center text-sm text-gray-500 mb-2">
-                  <svg className="flex-shrink-0 mr-1.5 h-5 w-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clipRule="evenodd" />
-                  </svg>
-                  {new Date(event.date).toLocaleDateString(undefined, { weekday: 'short', year: 'numeric', month: 'long', day: 'numeric' })}
-                </div>
+        {loading ? (
+          <div className="flex justify-center items-center py-20">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+          </div>
+        ) : events.length === 0 ? (
+          <div className="text-center py-20 bg-white rounded-2xl shadow-sm border border-gray-100">
+            <svg className="mx-auto h-12 w-12 text-gray-300 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
+            <h3 className="text-lg font-medium text-gray-900">No events found</h3>
+            <p className="mt-1 text-gray-500">Check back later for new campus events.</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+            {events.map((event) => {
+              const isRegistered = user && role === 'student' && 
+                event.registeredStudents?.some(student => (student._id || student) === user.id);
 
-                <div className="flex items-center text-sm text-gray-500 mb-4">
-                  <svg className="flex-shrink-0 mr-1.5 h-5 w-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
-                  </svg>
-                  <span className="truncate">{event.location}</span>
-                </div>
+              return (
+                <div key={event._id} className="bg-white rounded-2xl shadow-md hover:shadow-xl transition-shadow duration-300 overflow-hidden border border-gray-100 flex flex-col">
+                  <div className="h-48 bg-gradient-to-br from-blue-50 to-indigo-50 flex items-center justify-center relative">
+                     <svg className="w-16 h-16 text-blue-200" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                     {isRegistered && (
+                       <span className="absolute top-4 right-4 bg-green-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow-sm">
+                         Registered
+                       </span>
+                     )}
+                  </div>
+                  <div className="p-6 flex-1 flex flex-col">
+                    <h3 className="text-xl font-bold text-gray-900 mb-2 line-clamp-1">{event.title}</h3>
+                    
+                    <div className="flex items-center text-sm text-gray-500 mb-2">
+                      <svg className="flex-shrink-0 mr-1.5 h-5 w-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clipRule="evenodd" />
+                      </svg>
+                      {new Date(event.date).toLocaleDateString(undefined, { weekday: 'short', year: 'numeric', month: 'long', day: 'numeric' })}
+                    </div>
 
-                <p className="text-gray-600 line-clamp-3 mb-6 flex-1">{event.description}</p>
-                
-                <button className="mt-auto w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2.5 px-4 rounded-lg transition-colors duration-300">
-                  Register for Event
-                </button>
-              </div>
-            </div>
-          ))}
-        </div>
+                    <div className="flex items-center text-sm text-gray-500 mb-4">
+                      <svg className="flex-shrink-0 mr-1.5 h-5 w-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
+                      </svg>
+                      <span className="truncate">{event.location}</span>
+                    </div>
+
+                    <p className="text-gray-600 line-clamp-3 mb-6 flex-1">{event.description}</p>
+                    
+                    {role === 'admin' ? (
+                      <Link to="/admin-dashboard" className="mt-auto w-full bg-gray-100 hover:bg-gray-200 text-gray-800 font-semibold py-2.5 px-4 rounded-lg transition-colors duration-300 text-center">
+                        Manage Event
+                      </Link>
+                    ) : (
+                      <button 
+                        onClick={() => handleRegisterForEvent(event._id)}
+                        disabled={isRegistered}
+                        className={`mt-auto w-full font-semibold py-2.5 px-4 rounded-lg transition-colors duration-300 ${
+                          isRegistered 
+                            ? 'bg-green-50 text-green-700 border border-green-200 cursor-not-allowed' 
+                            : 'bg-blue-600 hover:bg-blue-700 text-white'
+                        }`}
+                      >
+                        {isRegistered ? 'Already Registered' : 'Register for Event'}
+                      </button>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
       </section>
     </div>
   );
 }
 
-function AddEvent() {
-  const navigate = useNavigate();
-  const [formData, setFormData] = useState({
-    title: '',
-    description: '',
-    date: '',
-    location: ''
-  });
-
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      const payload = {
-        title: formData.title,
-        description: formData.description,
-        date: formData.date,
-        location: formData.location
-      };
-      await axios.post('https://eventwave-t6v4.onrender.com/api/events', payload);
-      toast.success('Event added successfully!');
-      navigate('/');
-    } catch (error) {
-      console.log(error);
-      toast.error('Failed to create event. Please try again.');
-    }
-  };
-
-  return (
-    <div style={{
-      display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '40px 20px'
-    }}>
-      <div style={{
-        background: 'rgba(255, 255, 255, 0.25)',
-        backdropFilter: 'blur(16px)',
-        WebkitBackdropFilter: 'blur(16px)',
-        borderRadius: '24px',
-        padding: '40px',
-        boxShadow: '0 8px 32px 0 rgba(31, 38, 135, 0.15)',
-        border: '1px solid rgba(255, 255, 255, 0.4)',
-        width: '100%',
-        maxWidth: '500px',
-      }}>
-        <h2 style={{ textAlign: 'center', marginBottom: '30px', color: '#333', fontSize: '28px', fontWeight: '800' }}>Create Event</h2>
-        
-        {/* Message state has been replaced with browser alert */}
-
-        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-          <div>
-            <label style={{ display: 'block', marginBottom: '8px', color: '#444', fontWeight: 'bold', fontSize: '14px', textTransform: 'uppercase', letterSpacing: '1px' }}>Title</label>
-            <input 
-              type="text" name="title" value={formData.title} onChange={handleChange} required
-              style={{
-                width: '100%', padding: '14px', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.5)',
-                background: 'rgba(255, 255, 255, 0.6)', fontSize: '16px', outline: 'none', boxSizing: 'border-box',
-                boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.05)', transition: 'background 0.3s ease'
-              }}
-              onFocus={(e) => e.target.style.background = 'rgba(255, 255, 255, 0.9)'}
-              onBlur={(e) => e.target.style.background = 'rgba(255, 255, 255, 0.6)'}
-            />
-          </div>
-
-          <div>
-            <label style={{ display: 'block', marginBottom: '8px', color: '#444', fontWeight: 'bold', fontSize: '14px', textTransform: 'uppercase', letterSpacing: '1px' }}>Description</label>
-            <textarea 
-              name="description" value={formData.description} onChange={handleChange} required rows="4"
-              style={{
-                width: '100%', padding: '14px', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.5)',
-                background: 'rgba(255, 255, 255, 0.6)', fontSize: '16px', outline: 'none', resize: 'vertical', boxSizing: 'border-box',
-                boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.05)', transition: 'background 0.3s ease'
-              }}
-              onFocus={(e) => e.target.style.background = 'rgba(255, 255, 255, 0.9)'}
-              onBlur={(e) => e.target.style.background = 'rgba(255, 255, 255, 0.6)'}
-            />
-          </div>
-
-          <div>
-            <label style={{ display: 'block', marginBottom: '8px', color: '#444', fontWeight: 'bold', fontSize: '14px', textTransform: 'uppercase', letterSpacing: '1px' }}>Date</label>
-            <input 
-              type="date" name="date" value={formData.date} onChange={handleChange} required
-              style={{
-                width: '100%', padding: '14px', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.5)',
-                background: 'rgba(255, 255, 255, 0.6)', fontSize: '16px', outline: 'none', boxSizing: 'border-box',
-                boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.05)', transition: 'background 0.3s ease', color: '#333'
-              }}
-              onFocus={(e) => e.target.style.background = 'rgba(255, 255, 255, 0.9)'}
-              onBlur={(e) => e.target.style.background = 'rgba(255, 255, 255, 0.6)'}
-            />
-          </div>
-
-          <div>
-            <label style={{ display: 'block', marginBottom: '8px', color: '#444', fontWeight: 'bold', fontSize: '14px', textTransform: 'uppercase', letterSpacing: '1px' }}>Location</label>
-            <input 
-              type="text" name="location" value={formData.location} onChange={handleChange} required
-              style={{
-                width: '100%', padding: '14px', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.5)',
-                background: 'rgba(255, 255, 255, 0.6)', fontSize: '16px', outline: 'none', boxSizing: 'border-box',
-                boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.05)', transition: 'background 0.3s ease'
-              }}
-              onFocus={(e) => e.target.style.background = 'rgba(255, 255, 255, 0.9)'}
-              onBlur={(e) => e.target.style.background = 'rgba(255, 255, 255, 0.6)'}
-            />
-          </div>
-
-          <button type="submit" style={{
-            padding: '16px', borderRadius: '12px', border: 'none', 
-            background: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
-            color: 'white', fontSize: '18px', fontWeight: 'bold', cursor: 'pointer', marginTop: '10px',
-            boxShadow: '0 4px 15px rgba(0,242,254,0.4)', transition: 'all 0.3s ease'
-          }} 
-          onMouseOver={(e) => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 6px 20px rgba(0,242,254,0.6)'; }} 
-          onMouseOut={(e) => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 4px 15px rgba(0,242,254,0.4)'; }}>
-            Add Event
-          </button>
-        </form>
-      </div>
-    </div>
-  );
-}
-
 function App() {
+  const user = JSON.parse(localStorage.getItem('user'));
+  const role = localStorage.getItem('role');
+
+  const getDashboardLink = () => {
+    if (role === 'admin') return '/admin-dashboard';
+    if (role === 'student') return '/student-dashboard';
+    return '/login';
+  };
+
   return (
     <Router>
       <div>
@@ -244,7 +184,11 @@ function App() {
               </div>
               <div className="flex items-center space-x-4">
                 <Link to="/" className="text-gray-600 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">Home</Link>
-                <Link to="/login" className="bg-blue-600 text-white hover:bg-blue-700 px-5 py-2 rounded-lg text-sm font-medium shadow-sm transition-colors">Login</Link>
+                {user ? (
+                  <Link to={getDashboardLink()} className="bg-blue-600 text-white hover:bg-blue-700 px-5 py-2 rounded-lg text-sm font-medium shadow-sm transition-colors">Dashboard</Link>
+                ) : (
+                  <Link to="/login" className="bg-blue-600 text-white hover:bg-blue-700 px-5 py-2 rounded-lg text-sm font-medium shadow-sm transition-colors">Login</Link>
+                )}
               </div>
             </div>
           </div>
@@ -265,12 +209,6 @@ function App() {
             <Route path="/admin-dashboard" element={
               <ProtectedRoute allowedRole="admin">
                 <AdminDashboard />
-              </ProtectedRoute>
-            } />
-            
-            <Route path="/add-event" element={
-              <ProtectedRoute allowedRole="admin">
-                <AddEvent />
               </ProtectedRoute>
             } />
           </Routes>
