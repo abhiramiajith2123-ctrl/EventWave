@@ -22,7 +22,15 @@ const Login = () => {
       const payload = { ...formData, role };
       const response = await axios.post('https://eventwave-t6v4.onrender.com/api/auth/login', payload);
       toast.success(response.data.message || 'Login successful!');
-      navigate('/');
+      
+      localStorage.setItem('user', JSON.stringify(response.data.user));
+      localStorage.setItem('role', role);
+
+      if (role === 'admin') {
+        navigate('/admin-dashboard');
+      } else {
+        navigate('/student-dashboard');
+      }
     } catch (error) {
       console.error('Login error:', error);
       toast.error(error.response?.data?.message || 'Invalid credentials. Please try again.');

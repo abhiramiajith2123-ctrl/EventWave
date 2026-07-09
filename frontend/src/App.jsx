@@ -6,6 +6,9 @@ import 'react-toastify/dist/ReactToastify.css';
 import './App.css';
 import Login from './pages/Login';
 import Register from './pages/Register';
+import StudentDashboard from './pages/StudentDashboard';
+import AdminDashboard from './pages/AdminDashboard';
+import ProtectedRoute from './components/ProtectedRoute';
 
 function Home() {
   const dummyEvents = [
@@ -250,9 +253,26 @@ function App() {
         <div className="bg-gray-50 min-h-[calc(100vh-64px)]">
           <Routes>
             <Route path="/" element={<Home />} />
-            <Route path="/add-event" element={<AddEvent />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
+            
+            <Route path="/student-dashboard" element={
+              <ProtectedRoute allowedRole="student">
+                <StudentDashboard />
+              </ProtectedRoute>
+            } />
+            
+            <Route path="/admin-dashboard" element={
+              <ProtectedRoute allowedRole="admin">
+                <AdminDashboard />
+              </ProtectedRoute>
+            } />
+            
+            <Route path="/add-event" element={
+              <ProtectedRoute allowedRole="admin">
+                <AddEvent />
+              </ProtectedRoute>
+            } />
           </Routes>
         </div>
       </div>
