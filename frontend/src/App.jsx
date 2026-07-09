@@ -8,57 +8,99 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 
 function Home() {
-  const [events, setEvents] = useState([]);
-
-  useEffect(() => {
-    const fetchEvents = async () => {
-      try {
-        const response = await axios.get('https://eventwave-t6v4.onrender.com/api/events');
-        setEvents(response.data);
-      } catch (error) {
-        console.error('Error fetching events:', error);
-      }
-    };
-
-    fetchEvents();
-  }, []);
-
-  const handleDelete = async (id) => {
-    try {
-      await axios.delete(`https://eventwave-t6v4.onrender.com/api/events/${id}`);
-      setEvents(events.filter(event => (event._id || event.id) !== id));
-      toast.info('Event deleted successfully!');
-    } catch (error) {
-      console.error('Error deleting event:', error);
-      toast.error('Failed to delete event');
+  const dummyEvents = [
+    {
+      id: 1,
+      title: "Tech Symposium 2026",
+      date: "2026-08-15",
+      location: "Main Auditorium",
+      description: "Join us for an exciting day of tech talks, workshops, and networking with industry leaders.",
+    },
+    {
+      id: 2,
+      title: "Cultural Fest: Rhythm & Hues",
+      date: "2026-09-20",
+      location: "Open Air Theatre",
+      description: "Experience a vibrant celebration of art, music, and dance from diverse cultures across the globe.",
+    },
+    {
+      id: 3,
+      title: "Startup Pitch Competition",
+      date: "2026-10-05",
+      location: "Innovation Hub",
+      description: "Got a groundbreaking idea? Pitch it to top investors and win seed funding for your startup.",
+    },
+    {
+      id: 4,
+      title: "Annual Sports Meet",
+      date: "2026-11-12",
+      location: "University Sports Complex",
+      description: "Compete in various track and field events and cheer for your department to win the championship trophy.",
     }
-  };
+  ];
 
   return (
-    <div>
-      <h2>Home</h2>
-      <p>Welcome to EventWave - Campus Event Management System</p>
-      
-      {events.length === 0 ? (
-        <p style={{ marginTop: '20px', fontStyle: 'italic', color: '#666' }}>No events found. Please add some!</p>
-      ) : (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '20px', marginTop: '20px' }}>
-          {events.map((event) => (
-            <div key={event._id || event.id} style={{ position: 'relative', border: '1px solid #ddd', padding: '20px', borderRadius: '12px', boxShadow: '0 4px 12px rgba(0,0,0,0.1)', background: '#fff', color: '#333' }}>
-              <button 
-                onClick={() => handleDelete(event._id || event.id)}
-                style={{ position: 'absolute', top: '15px', right: '15px', background: '#ff4d4f', color: 'white', border: 'none', borderRadius: '6px', padding: '6px 12px', cursor: 'pointer', fontWeight: 'bold' }}
-              >
-                Delete
-              </button>
-              <h3 style={{ marginTop: 0, color: '#222', paddingRight: '70px' }}>{event.title || event.name || 'Untitled Event'}</h3>
-              <p style={{ margin: '8px 0' }}><strong>Date:</strong> {event.date ? new Date(event.date).toLocaleDateString() : 'N/A'}</p>
-              <p style={{ margin: '8px 0' }}><strong>Location:</strong> {event.location || 'N/A'}</p>
-              <p style={{ margin: '12px 0 0', color: '#555', lineHeight: '1.5' }}>{event.description}</p>
+    <div className="bg-gray-50 min-h-screen pb-12">
+      {/* Hero Section */}
+      <section className="bg-gradient-to-r from-blue-600 to-indigo-700 text-white py-20 px-4 sm:px-6 lg:px-8 text-center shadow-inner">
+        <div className="max-w-4xl mx-auto">
+          <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight mb-6">
+            Discover and Join <br className="hidden sm:block" />
+            <span className="text-blue-200">Campus Events</span>
+          </h1>
+          <p className="mt-4 text-lg sm:text-xl text-blue-100 max-w-2xl mx-auto mb-10">
+            EventWave is your premier platform to explore, register, and manage upcoming activities at your college. Never miss out on what's happening!
+          </p>
+          <button className="bg-white text-indigo-700 font-bold py-3 px-8 rounded-full shadow-lg hover:bg-gray-100 hover:scale-105 transition-transform duration-300">
+            Explore Events
+          </button>
+        </div>
+      </section>
+
+      {/* Upcoming Events Section */}
+      <section className="py-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+        <div className="mb-12 text-center">
+          <h2 className="text-3xl font-extrabold text-gray-900 tracking-tight sm:text-4xl">
+            Upcoming Events
+          </h2>
+          <p className="mt-4 max-w-2xl text-xl text-gray-500 mx-auto">
+            Check out what's on the horizon and secure your spot today.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+          {dummyEvents.map((event) => (
+            <div key={event.id} className="bg-white rounded-2xl shadow-md hover:shadow-xl transition-shadow duration-300 overflow-hidden border border-gray-100 flex flex-col">
+              <div className="h-48 bg-gradient-to-br from-gray-200 to-gray-300 flex items-center justify-center">
+                 <svg className="w-16 h-16 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+              </div>
+              <div className="p-6 flex-1 flex flex-col">
+                <h3 className="text-xl font-bold text-gray-900 mb-2 line-clamp-1">{event.title}</h3>
+                
+                <div className="flex items-center text-sm text-gray-500 mb-2">
+                  <svg className="flex-shrink-0 mr-1.5 h-5 w-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clipRule="evenodd" />
+                  </svg>
+                  {new Date(event.date).toLocaleDateString(undefined, { weekday: 'short', year: 'numeric', month: 'long', day: 'numeric' })}
+                </div>
+
+                <div className="flex items-center text-sm text-gray-500 mb-4">
+                  <svg className="flex-shrink-0 mr-1.5 h-5 w-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
+                  </svg>
+                  <span className="truncate">{event.location}</span>
+                </div>
+
+                <p className="text-gray-600 line-clamp-3 mb-6 flex-1">{event.description}</p>
+                
+                <button className="mt-auto w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2.5 px-4 rounded-lg transition-colors duration-300">
+                  Register for Event
+                </button>
+              </div>
             </div>
           ))}
         </div>
-      )}
+      </section>
     </div>
   );
 }
@@ -191,24 +233,21 @@ function App() {
     <Router>
       <div>
         <ToastContainer position="top-right" autoClose={3000} theme="colored" />
-        <nav style={{ padding: '1rem', background: '#333', color: 'white', marginBottom: '2rem', borderRadius: '8px' }}>
-          <ul style={{ listStyle: 'none', display: 'flex', gap: '2rem', margin: 0, padding: 0 }}>
-            <li>
-              <Link to="/" style={{ color: 'white', textDecoration: 'none', fontWeight: 'bold' }}>Home</Link>
-            </li>
-            <li>
-              <Link to="/add-event" style={{ color: 'white', textDecoration: 'none', fontWeight: 'bold' }}>Add Event</Link>
-            </li>
-            <li>
-              <Link to="/login" style={{ color: 'white', textDecoration: 'none', fontWeight: 'bold' }}>Login</Link>
-            </li>
-            <li>
-              <Link to="/register" style={{ color: 'white', textDecoration: 'none', fontWeight: 'bold' }}>Register</Link>
-            </li>
-          </ul>
+        <nav className="bg-white shadow-sm sticky top-0 z-50 border-b border-gray-100">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="flex justify-between h-16">
+              <div className="flex items-center">
+                <Link to="/" className="text-2xl font-extrabold text-blue-600 tracking-tighter">EventWave</Link>
+              </div>
+              <div className="flex items-center space-x-4">
+                <Link to="/" className="text-gray-600 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">Home</Link>
+                <Link to="/login" className="bg-blue-600 text-white hover:bg-blue-700 px-5 py-2 rounded-lg text-sm font-medium shadow-sm transition-colors">Login</Link>
+              </div>
+            </div>
+          </div>
         </nav>
         
-        <div>
+        <div className="bg-gray-50 min-h-[calc(100vh-64px)]">
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/add-event" element={<AddEvent />} />
