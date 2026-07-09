@@ -104,13 +104,17 @@ function Home() {
             {events.map((event) => {
               const isRegistered = user && role === 'student' && 
                 event.registeredStudents?.some(student => (student._id || student) === user.id);
+              
+              const fallbackImage = "https://images.unsplash.com/photo-1540575467063-178a50c2df87?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80";
+              const displayImage = event.imageUrl || fallbackImage;
 
               return (
                 <div key={event._id} className="bg-white rounded-2xl shadow-md hover:shadow-xl transition-shadow duration-300 overflow-hidden border border-gray-100 flex flex-col">
-                  <div className="h-48 bg-gradient-to-br from-blue-50 to-indigo-50 flex items-center justify-center relative">
-                     <svg className="w-16 h-16 text-blue-200" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                  <div className="h-48 relative">
+                     <img src={displayImage} alt={event.title} className="w-full h-full object-cover" />
+                     <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
                      {isRegistered && (
-                       <span className="absolute top-4 right-4 bg-green-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow-sm">
+                       <span className="absolute top-4 right-4 bg-green-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow-sm z-10">
                          Registered
                        </span>
                      )}

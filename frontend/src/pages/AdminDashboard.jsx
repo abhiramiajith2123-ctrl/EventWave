@@ -13,7 +13,7 @@ const AdminDashboard = () => {
 
   // Form State
   const [formData, setFormData] = useState({
-    title: '', description: '', date: '', location: ''
+    title: '', description: '', date: '', location: '', imageUrl: ''
   });
 
   const fetchEvents = async () => {
@@ -47,7 +47,7 @@ const AdminDashboard = () => {
     try {
       await axios.post('https://eventwave-t6v4.onrender.com/api/events', formData);
       toast.success('Event added successfully!');
-      setFormData({ title: '', description: '', date: '', location: '' });
+      setFormData({ title: '', description: '', date: '', location: '', imageUrl: '' });
       setShowCreateForm(false);
       fetchEvents(); // Refresh list
     } catch (error) {
@@ -107,6 +107,10 @@ const AdminDashboard = () => {
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Location</label>
                 <input type="text" name="location" value={formData.location} onChange={handleFormChange} required className="w-full border border-gray-300 rounded-lg p-2.5 outline-none focus:ring-2 focus:ring-blue-500" />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Image URL (Optional)</label>
+                <input type="url" name="imageUrl" value={formData.imageUrl} onChange={handleFormChange} className="w-full border border-gray-300 rounded-lg p-2.5 outline-none focus:ring-2 focus:ring-blue-500" placeholder="https://example.com/image.jpg" />
               </div>
               <div className="md:col-span-2">
                 <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>

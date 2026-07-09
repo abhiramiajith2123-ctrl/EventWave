@@ -17,6 +17,10 @@ const eventSchema = new mongoose.Schema({
     type: String,
     required: true
   },
+  imageUrl: {
+    type: String,
+    required: false
+  },
   registeredStudents: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Student'
