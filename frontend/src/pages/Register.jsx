@@ -41,7 +41,16 @@ const Register = () => {
       const payload = { ...formData, role };
       const response = await axios.post('https://eventwave-t6v4.onrender.com/api/auth/register', payload);
       toast.success(response.data.message || 'Registration successful!');
-      navigate('/login');
+      
+      // Auto-login
+      localStorage.setItem('user', JSON.stringify(response.data.user));
+      localStorage.setItem('role', role);
+
+      if (role === 'student') {
+        window.location.href = '/student-dashboard';
+      } else {
+        window.location.href = '/admin-dashboard';
+      }
     } catch (error) {
       console.error('Registration error:', error);
       toast.error(error.response?.data?.message || 'Failed to register. Please try again.');
