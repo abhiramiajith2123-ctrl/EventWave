@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route, Link, useNavigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Link, useNavigate, useLocation } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { ToastContainer, toast } from 'react-toastify';
@@ -9,6 +9,40 @@ import Register from './pages/Register';
 import StudentDashboard from './pages/StudentDashboard';
 import AdminDashboard from './pages/AdminDashboard';
 import ProtectedRoute from './components/ProtectedRoute';
+
+function Navigation() {
+  const location = useLocation(); // Forces re-render on route change
+  const user = JSON.parse(localStorage.getItem('user'));
+  const role = localStorage.getItem('role');
+
+  const getDashboardLink = () => {
+    if (role === 'admin') return '/admin-dashboard';
+    if (role === 'student') return '/student-dashboard';
+    return '/login';
+  };
+
+  return (
+    <nav className="bg-white shadow-sm sticky top-0 z-50 border-b border-gray-100">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex justify-between h-16">
+          <div className="flex items-center">
+            <Link to="/" className="text-2xl font-extrabold text-blue-600 tracking-tighter">EventWave</Link>
+          </div>
+          <div className="flex items-center space-x-4">
+            <Link to="/" className="text-gray-600 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">Home</Link>
+            {user ? (
+              <Link to={getDashboardLink()} className="bg-blue-600 text-white hover:bg-blue-700 px-5 py-2 rounded-lg text-sm font-medium shadow-sm transition-colors">
+                {role === 'student' ? 'My Profile' : 'Dashboard'}
+              </Link>
+            ) : (
+              <Link to="/login" className="bg-blue-600 text-white hover:bg-blue-700 px-5 py-2 rounded-lg text-sm font-medium shadow-sm transition-colors">Login</Link>
+            )}
+          </div>
+        </div>
+      </div>
+    </nav>
+  );
+}
 
 function Home() {
   const [events, setEvents] = useState([]);
@@ -167,38 +201,11 @@ function Home() {
 }
 
 function App() {
-  const user = JSON.parse(localStorage.getItem('user'));
-  const role = localStorage.getItem('role');
-
-  const getDashboardLink = () => {
-    if (role === 'admin') return '/admin-dashboard';
-    if (role === 'student') return '/student-dashboard';
-    return '/login';
-  };
-
   return (
     <Router>
       <div>
         <ToastContainer position="top-right" autoClose={3000} theme="colored" />
-        <nav className="bg-white shadow-sm sticky top-0 z-50 border-b border-gray-100">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex justify-between h-16">
-              <div className="flex items-center">
-                <Link to="/" className="text-2xl font-extrabold text-blue-600 tracking-tighter">EventWave</Link>
-              </div>
-              <div className="flex items-center space-x-4">
-                <Link to="/" className="text-gray-600 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">Home</Link>
-                {user ? (
-                  <Link to={getDashboardLink()} className="bg-blue-600 text-white hover:bg-blue-700 px-5 py-2 rounded-lg text-sm font-medium shadow-sm transition-colors">
-                    {role === 'student' ? 'My Profile' : 'Dashboard'}
-                  </Link>
-                ) : (
-                  <Link to="/login" className="bg-blue-600 text-white hover:bg-blue-700 px-5 py-2 rounded-lg text-sm font-medium shadow-sm transition-colors">Login</Link>
-                )}
-              </div>
-            </div>
-          </div>
-        </nav>
+        <Navigation />
         
         <div className="bg-gray-50 min-h-[calc(100vh-64px)]">
           <Routes>
