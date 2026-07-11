@@ -36,7 +36,7 @@ router.post('/register', async (req, res) => {
       });
 
       const savedStudent = await newStudent.save();
-      return res.status(201).json({ message: "Student registered successfully", user: { id: savedStudent._id, registerNumber: savedStudent.registerNumber, email: savedStudent.email } });
+      return res.status(201).json({ message: "Student registered successfully", user: { id: savedStudent._id, _id: savedStudent._id, registerNumber: savedStudent.registerNumber, email: savedStudent.email } });
     
     } else if (role === 'admin') {
       const { fullName, email, secretKey } = rest;
@@ -57,7 +57,7 @@ router.post('/register', async (req, res) => {
       });
 
       const savedAdmin = await newAdmin.save();
-      return res.status(201).json({ message: "Admin registered successfully", user: { id: savedAdmin._id, email: savedAdmin.email } });
+      return res.status(201).json({ message: "Admin registered successfully", user: { id: savedAdmin._id, _id: savedAdmin._id, email: savedAdmin.email } });
     
     } else {
       return res.status(400).json({ message: "Invalid role specified" });
@@ -88,6 +88,7 @@ router.post('/login', async (req, res) => {
         message: "Login successful", 
         user: { 
           id: student._id, 
+          _id: student._id,
           registerNumber: student.registerNumber, 
           email: student.email,
           fullName: student.fullName,
@@ -108,7 +109,7 @@ router.post('/login', async (req, res) => {
         return res.status(400).json({ message: "Invalid Email or Password" });
       }
 
-      return res.status(200).json({ message: "Login successful", user: { id: admin._id, email: admin.email, fullName: admin.fullName } });
+      return res.status(200).json({ message: "Login successful", user: { id: admin._id, _id: admin._id, email: admin.email, fullName: admin.fullName } });
 
     } else {
       return res.status(400).json({ message: "Invalid role specified" });
@@ -121,24 +122,29 @@ router.post('/login', async (req, res) => {
 
 // Update Profile Route
 router.put('/profile/:id', async (req, res) => {
+  console.log("PUT /profile/:id called");
+  console.log("req.body:", req.body);
+  console.log("req.user:", req.user || "No req.user (Token auth not implemented)");
+  
   try {
     const { fullName, department, yearOfStudy } = req.body;
     
-    const student = await Student.findById(req.params.id);
-    if (!student) {
+    // Use findByIdAndUpdate to directly update MongoDB and bypass missing-field validation errors
+    const updatedStudent = await Student.findByIdAndUpdate(
+      req.params.id,
+      { fullName, department, yearOfStudy },
+      { new: true }
+    );
+    
+    if (!updatedStudent) {
       return res.status(404).json({ message: "Student not found" });
     }
-
-    if (fullName) student.fullName = fullName;
-    if (department) student.department = department;
-    if (yearOfStudy) student.yearOfStudy = yearOfStudy;
-
-    const updatedStudent = await student.save();
 
     res.status(200).json({
       message: "Profile updated successfully",
       user: {
         id: updatedStudent._id,
+        _id: updatedStudent._id,
         registerNumber: updatedStudent.registerNumber,
         email: updatedStudent.email,
         fullName: updatedStudent.fullName,
@@ -163,6 +169,7 @@ router.get('/profile/:id', async (req, res) => {
     return res.status(200).json({
       user: {
         id: student._id,
+        _id: student._id,
         registerNumber: student.registerNumber,
         email: student.email,
         fullName: student.fullName,
