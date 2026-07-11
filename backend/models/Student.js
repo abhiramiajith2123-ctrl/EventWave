@@ -10,6 +10,11 @@ const studentSchema = new mongoose.Schema({
     required: true,
     unique: true,
   },
+  email: {
+    type: String,
+    required: true,
+    unique: true,
+  },
   department: {
     type: String,
     required: true,

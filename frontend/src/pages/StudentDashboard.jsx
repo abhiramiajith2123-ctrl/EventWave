@@ -4,7 +4,7 @@ import axios from 'axios';
 import { toast } from 'react-toastify';
 
 const StudentDashboard = () => {
-  const user = JSON.parse(localStorage.getItem('user')) || {};
+  const [user, setUser] = useState(JSON.parse(localStorage.getItem('user')) || {});
   const navigate = useNavigate();
   const [registeredEvents, setRegisteredEvents] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -31,7 +31,7 @@ const StudentDashboard = () => {
       toast.success(response.data.message || 'Profile updated successfully!');
       localStorage.setItem('user', JSON.stringify(response.data.user));
       setIsEditing(false);
-      window.location.reload();
+      setUser(response.data.user);
     } catch (error) {
       console.error('Profile update error:', error);
       toast.error(error.response?.data?.message || 'Failed to update profile.');
@@ -55,7 +55,23 @@ const StudentDashboard = () => {
       }
     };
 
+    const fetchUserProfile = async () => {
+      try {
+        const response = await axios.get(`https://eventwave-t6v4.onrender.com/api/auth/profile/${user.id}`);
+        setUser(response.data.user);
+        setEditFormData({
+          fullName: response.data.user.fullName || '',
+          department: response.data.user.department || '',
+          yearOfStudy: response.data.user.yearOfStudy || '',
+        });
+        localStorage.setItem('user', JSON.stringify(response.data.user));
+      } catch (error) {
+        console.error('Error fetching user profile:', error);
+      }
+    };
+
     if (user.id) {
+      fetchUserProfile();
       fetchRegisteredEvents();
     } else {
       setLoading(false);
@@ -140,7 +156,7 @@ const StudentDashboard = () => {
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">Email Address (Read-only)</label>
-                      <input type="text" value="" placeholder="No email associated" disabled className="w-full border border-gray-200 bg-gray-100 text-gray-500 rounded-lg p-2.5 cursor-not-allowed" />
+                      <input type="text" value={user.email || ''} placeholder="No email associated" disabled className="w-full border border-gray-200 bg-gray-100 text-gray-500 rounded-lg p-2.5 cursor-not-allowed" />
                     </div>
                     <div className="flex gap-3 pt-2">
                       <button type="submit" className="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg font-medium transition-colors">

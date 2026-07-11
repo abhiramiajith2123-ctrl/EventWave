@@ -18,7 +18,7 @@ router.post('/register', async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, salt);
 
     if (role === 'student') {
-      const { fullName, registerNumber, department, batch, yearOfStudy } = rest;
+      const { fullName, registerNumber, email, department, batch, yearOfStudy } = rest;
       
       const existingStudent = await Student.findOne({ registerNumber });
       if (existingStudent) {
@@ -28,6 +28,7 @@ router.post('/register', async (req, res) => {
       const newStudent = new Student({
         fullName,
         registerNumber,
+        email,
         department,
         batch,
         yearOfStudy,
@@ -35,7 +36,7 @@ router.post('/register', async (req, res) => {
       });
 
       const savedStudent = await newStudent.save();
-      return res.status(201).json({ message: "Student registered successfully", user: { id: savedStudent._id, registerNumber: savedStudent.registerNumber } });
+      return res.status(201).json({ message: "Student registered successfully", user: { id: savedStudent._id, registerNumber: savedStudent.registerNumber, email: savedStudent.email } });
     
     } else if (role === 'admin') {
       const { fullName, email, secretKey } = rest;
@@ -88,6 +89,7 @@ router.post('/login', async (req, res) => {
         user: { 
           id: student._id, 
           registerNumber: student.registerNumber, 
+          email: student.email,
           fullName: student.fullName,
           department: student.department,
           batch: student.batch,
@@ -138,6 +140,7 @@ router.put('/profile/:id', async (req, res) => {
       user: {
         id: updatedStudent._id,
         registerNumber: updatedStudent.registerNumber,
+        email: updatedStudent.email,
         fullName: updatedStudent.fullName,
         department: updatedStudent.department,
         batch: updatedStudent.batch,
@@ -147,6 +150,30 @@ router.put('/profile/:id', async (req, res) => {
   } catch (error) {
     console.error("Profile update error:", error);
     res.status(500).json({ message: "Server error during profile update" });
+  }
+});
+
+// Get Profile Route
+router.get('/profile/:id', async (req, res) => {
+  try {
+    const student = await Student.findById(req.params.id);
+    if (!student) {
+      return res.status(404).json({ message: "Student not found" });
+    }
+    return res.status(200).json({
+      user: {
+        id: student._id,
+        registerNumber: student.registerNumber,
+        email: student.email,
+        fullName: student.fullName,
+        department: student.department,
+        batch: student.batch,
+        yearOfStudy: student.yearOfStudy
+      }
+    });
+  } catch (error) {
+    console.error("Profile fetch error:", error);
+    res.status(500).json({ message: "Server error during profile fetch" });
   }
 });
 
