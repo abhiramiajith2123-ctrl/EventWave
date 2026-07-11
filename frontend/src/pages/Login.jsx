@@ -66,7 +66,7 @@ const Login = () => {
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="flex flex-col gap-5">
+        <form onSubmit={handleSubmit} autoComplete="off" className="flex flex-col gap-5">
           {role === 'student' ? (
             <div>
               <label className="block text-sm font-bold text-gray-600 uppercase tracking-wide mb-2">
@@ -78,6 +78,7 @@ const Login = () => {
                 value={formData.registerNumber}
                 onChange={handleChange}
                 placeholder=""
+                autoComplete="off"
                 required
                 className="w-full px-4 py-3 rounded-xl border border-gray-300 bg-gray-50/50 text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
               />
@@ -93,6 +94,7 @@ const Login = () => {
                 value={formData.email}
                 onChange={handleChange}
                 placeholder=""
+                autoComplete="off"
                 required
                 className="w-full px-4 py-3 rounded-xl border border-gray-300 bg-gray-50/50 text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
               />
@@ -110,6 +112,7 @@ const Login = () => {
                 value={formData.password}
                 onChange={handleChange}
                 placeholder=""
+                autoComplete="new-password"
                 required
                 className="w-full px-4 py-3 rounded-xl border border-gray-300 bg-gray-50/50 text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
               />

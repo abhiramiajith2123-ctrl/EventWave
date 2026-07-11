@@ -79,7 +79,7 @@ const Register = () => {
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+        <form onSubmit={handleSubmit} autoComplete="off" className="flex flex-col gap-4">
           
           {/* Shared Field for both roles (if needed, but Admin has Email, Student has Register Number. Wait, Admin needs Full Name too based on requirements) */}
           <div>
@@ -92,6 +92,7 @@ const Register = () => {
               value={formData.fullName}
               onChange={handleChange}
               placeholder=""
+              autoComplete="off"
               required
               className="w-full px-4 py-3 rounded-xl border border-gray-300 bg-gray-50/50 text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
             />
@@ -109,6 +110,7 @@ const Register = () => {
                   value={formData.registerNumber}
                   onChange={handleChange}
                   placeholder=""
+                  autoComplete="off"
                   required
                   className="w-full px-4 py-3 rounded-xl border border-gray-300 bg-gray-50/50 text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                 />
@@ -143,6 +145,7 @@ const Register = () => {
                     value={formData.batch}
                     onChange={handleChange}
                     placeholder=""
+                    autoComplete="off"
                     required
                     className="w-full px-4 py-3 rounded-xl border border-gray-300 bg-gray-50/50 text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                   />
@@ -161,6 +164,7 @@ const Register = () => {
                   value={formData.email}
                   onChange={handleChange}
                   placeholder=""
+                  autoComplete="off"
                   required
                   className="w-full px-4 py-3 rounded-xl border border-gray-300 bg-gray-50/50 text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                 />
@@ -176,6 +180,7 @@ const Register = () => {
                     value={formData.secretKey}
                     onChange={handleChange}
                     placeholder=""
+                    autoComplete="off"
                     required
                     className="w-full px-4 py-3 rounded-xl border border-gray-300 bg-gray-50/50 text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                   />
@@ -202,6 +207,7 @@ const Register = () => {
                 value={formData.password}
                 onChange={handleChange}
                 placeholder=""
+                autoComplete="new-password"
                 required
                 className="w-full px-4 py-3 rounded-xl border border-gray-300 bg-gray-50/50 text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
               />
@@ -226,6 +232,7 @@ const Register = () => {
                 value={formData.confirmPassword}
                 onChange={handleChange}
                 placeholder=""
+                autoComplete="new-password"
                 required
                 className="w-full px-4 py-3 rounded-xl border border-gray-300 bg-gray-50/50 text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
               />
