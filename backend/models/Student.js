@@ -12,8 +12,8 @@ const studentSchema = new mongoose.Schema({
   },
   email: {
     type: String,
-    required: true,
     unique: true,
+    sparse: true,
   },
   department: {
     type: String,
@@ -25,7 +25,6 @@ const studentSchema = new mongoose.Schema({
   },
   yearOfStudy: {
     type: String,
-    required: true,
   },
   password: {
     type: String,

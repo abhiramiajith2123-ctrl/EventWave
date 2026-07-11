@@ -12,6 +12,7 @@ const AdminDashboard = () => {
   const [loading, setLoading] = useState(true);
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [expandedEventId, setExpandedEventId] = useState(null);
+  const [selectedStudent, setSelectedStudent] = useState(null);
 
   // Form State
   const [formData, setFormData] = useState({
@@ -223,9 +224,17 @@ const AdminDashboard = () => {
                               <div key={student._id} className="bg-gray-50 p-3 rounded-lg border border-gray-100 flex flex-col">
                                 <span className="font-bold text-gray-900">{student.fullName}</span>
                                 <span className="text-xs text-gray-500 mt-1">{student.department} &bull; Batch: {student.batch}</span>
-                                <span className="font-mono text-xs text-blue-600 mt-2 bg-blue-50 inline-block px-2 py-1 rounded w-fit">
-                                  {student.registerNumber}
-                                </span>
+                                <div className="flex justify-between items-end mt-2">
+                                  <span className="font-mono text-xs text-blue-600 bg-blue-50 inline-block px-2 py-1 rounded w-fit">
+                                    {student.registerNumber}
+                                  </span>
+                                  <button
+                                    onClick={() => setSelectedStudent(student)}
+                                    className="text-xs bg-indigo-100 text-indigo-700 hover:bg-indigo-200 font-medium py-1 px-2 rounded transition-colors"
+                                  >
+                                    View Profile
+                                  </button>
+                                </div>
                               </div>
                             ))}
                           </div>
@@ -242,6 +251,61 @@ const AdminDashboard = () => {
             )}
           </div>
         </div>
+
+        {selectedStudent && (
+          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex justify-center items-center z-50 p-4">
+            <div className="bg-white rounded-2xl shadow-xl p-6 w-full max-w-md relative">
+              <button 
+                onClick={() => setSelectedStudent(null)}
+                className="absolute top-4 right-4 text-gray-400 hover:text-gray-600"
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+              </button>
+              
+              <div className="flex items-center space-x-4 mb-6 border-b border-gray-100 pb-4">
+                <div className="h-16 w-16 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 font-bold text-2xl">
+                  {selectedStudent.fullName ? selectedStudent.fullName.charAt(0).toUpperCase() : 'S'}
+                </div>
+                <div>
+                  <h3 className="text-xl font-bold text-gray-900">{selectedStudent.fullName}</h3>
+                  <span className="font-mono text-xs text-blue-600 bg-blue-50 px-2 py-1 rounded mt-1 inline-block">
+                    {selectedStudent.registerNumber}
+                  </span>
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wide">Email Address</label>
+                  <p className="text-gray-800 font-medium">{selectedStudent.email || 'No email provided'}</p>
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wide">Department</label>
+                    <p className="text-gray-800 font-medium">{selectedStudent.department || 'N/A'}</p>
+                  </div>
+                  <div>
+                    <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wide">Batch</label>
+                    <p className="text-gray-800 font-medium">{selectedStudent.batch || 'N/A'}</p>
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wide">Year of Study</label>
+                  <p className="text-gray-800 font-medium">{selectedStudent.yearOfStudy || 'N/A'}</p>
+                </div>
+              </div>
+              
+              <div className="mt-6 pt-4 border-t border-gray-100 flex justify-end">
+                <button 
+                  onClick={() => setSelectedStudent(null)}
+                  className="bg-gray-100 hover:bg-gray-200 text-gray-800 font-medium py-2 px-6 rounded-lg transition-colors"
+                >
+                  Close
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
 
       </div>
     </div>

@@ -38,7 +38,7 @@ app.post('/api/events', async (req, res) => {
 // 2. Get All Events (GET)
 app.get('/api/events', async (req, res) => {
   try {
-    const events = await Event.find().populate('registeredStudents', 'fullName registerNumber department batch');
+    const events = await Event.find().populate('registeredStudents', 'fullName registerNumber department batch email yearOfStudy');
     res.status(200).json(events);
   } catch (error) {
     res.status(500).json({ message: "Events edukkan pattiyailla", error });
