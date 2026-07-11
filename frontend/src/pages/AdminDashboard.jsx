@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import jsPDF from 'jspdf';
-import 'jspdf-autotable';
+import autoTable from 'jspdf-autotable';
 
 const AdminDashboard = () => {
   const user = JSON.parse(localStorage.getItem('user')) || {};
@@ -91,7 +91,7 @@ const AdminDashboard = () => {
         tableRows.push(studentData);
       });
 
-      doc.autoTable({
+      autoTable(doc, {
         head: [tableColumn],
         body: tableRows,
         startY: 38,
