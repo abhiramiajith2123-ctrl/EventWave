@@ -91,7 +91,7 @@ const Register = () => {
               name="fullName"
               value={formData.fullName}
               onChange={handleChange}
-              placeholder="John Doe"
+              placeholder=""
               required
               className="w-full px-4 py-3 rounded-xl border border-gray-300 bg-gray-50/50 text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
             />
@@ -108,7 +108,7 @@ const Register = () => {
                   name="registerNumber"
                   value={formData.registerNumber}
                   onChange={handleChange}
-                  placeholder="e.g. S123456"
+                  placeholder=""
                   required
                   className="w-full px-4 py-3 rounded-xl border border-gray-300 bg-gray-50/50 text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                 />
@@ -142,7 +142,7 @@ const Register = () => {
                     name="batch"
                     value={formData.batch}
                     onChange={handleChange}
-                    placeholder="2023-2027"
+                    placeholder=""
                     required
                     className="w-full px-4 py-3 rounded-xl border border-gray-300 bg-gray-50/50 text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                   />
@@ -160,7 +160,7 @@ const Register = () => {
                   name="email"
                   value={formData.email}
                   onChange={handleChange}
-                  placeholder="admin@college.edu"
+                  placeholder=""
                   required
                   className="w-full px-4 py-3 rounded-xl border border-gray-300 bg-gray-50/50 text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                 />
@@ -201,7 +201,7 @@ const Register = () => {
                 name="password"
                 value={formData.password}
                 onChange={handleChange}
-                placeholder="••••••••"
+                placeholder=""
                 required
                 className="w-full px-4 py-3 rounded-xl border border-gray-300 bg-gray-50/50 text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
               />
@@ -225,7 +225,7 @@ const Register = () => {
                 name="confirmPassword"
                 value={formData.confirmPassword}
                 onChange={handleChange}
-                placeholder="••••••••"
+                placeholder=""
                 required
                 className="w-full px-4 py-3 rounded-xl border border-gray-300 bg-gray-50/50 text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
               />
