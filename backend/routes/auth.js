@@ -18,7 +18,7 @@ router.post('/register', async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, salt);
 
     if (role === 'student') {
-      const { fullName, registerNumber, department, batch } = rest;
+      const { fullName, registerNumber, department, batch, yearOfStudy } = rest;
       
       const existingStudent = await Student.findOne({ registerNumber });
       if (existingStudent) {
@@ -30,6 +30,7 @@ router.post('/register', async (req, res) => {
         registerNumber,
         department,
         batch,
+        yearOfStudy,
         password: hashedPassword,
       });
 
@@ -89,7 +90,8 @@ router.post('/login', async (req, res) => {
           registerNumber: student.registerNumber, 
           fullName: student.fullName,
           department: student.department,
-          batch: student.batch
+          batch: student.batch,
+          yearOfStudy: student.yearOfStudy
         } 
       });
 
@@ -112,6 +114,39 @@ router.post('/login', async (req, res) => {
   } catch (error) {
     console.error("Login error:", error);
     res.status(500).json({ message: "Server error during login", error: error.message });
+  }
+});
+
+// Update Profile Route
+router.put('/profile/:id', async (req, res) => {
+  try {
+    const { fullName, department, yearOfStudy } = req.body;
+    
+    const student = await Student.findById(req.params.id);
+    if (!student) {
+      return res.status(404).json({ message: "Student not found" });
+    }
+
+    if (fullName) student.fullName = fullName;
+    if (department) student.department = department;
+    if (yearOfStudy) student.yearOfStudy = yearOfStudy;
+
+    const updatedStudent = await student.save();
+
+    res.status(200).json({
+      message: "Profile updated successfully",
+      user: {
+        id: updatedStudent._id,
+        registerNumber: updatedStudent.registerNumber,
+        fullName: updatedStudent.fullName,
+        department: updatedStudent.department,
+        batch: updatedStudent.batch,
+        yearOfStudy: updatedStudent.yearOfStudy
+      }
+    });
+  } catch (error) {
+    console.error("Profile update error:", error);
+    res.status(500).json({ message: "Server error during profile update" });
   }
 });
 

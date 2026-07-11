@@ -12,6 +12,7 @@ const Register = () => {
     registerNumber: '',
     department: '',
     batch: '',
+    yearOfStudy: '',
     email: '',
     password: '',
     confirmPassword: '',
@@ -22,14 +23,9 @@ const Register = () => {
   const [showSecretKey, setShowSecretKey] = useState(false);
 
   const departments = [
-    "Computer Science",
-    "Information Technology",
-    "Electronics and Communication",
-    "Electrical and Electronics",
-    "Mechanical Engineering",
-    "Civil Engineering",
-    "Artificial Intelligence"
+    'Computer Science', 'Mathematics', 'Physics', 'Chemistry', 'Botany', 'Microbiology', 'Commerce'
   ];
+  const yearsOfStudy = ['First Year', 'Second Year', 'Third Year'];
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -137,19 +133,36 @@ const Register = () => {
 
                 <div className="flex-1">
                   <label className="block text-sm font-bold text-gray-600 uppercase tracking-wide mb-1.5">
-                    Batch
+                    Year of Study
                   </label>
-                  <input
-                    type="text"
-                    name="batch"
-                    value={formData.batch}
+                  <select
+                    name="yearOfStudy"
+                    value={formData.yearOfStudy}
                     onChange={handleChange}
-                    placeholder=""
-                    autoComplete="off"
                     required
-                    className="w-full px-4 py-3 rounded-xl border border-gray-300 bg-gray-50/50 text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                  />
+                    className="w-full px-4 py-3 rounded-xl border border-gray-300 bg-gray-50/50 text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all appearance-none"
+                  >
+                    <option value="" disabled>Select Year</option>
+                    {yearsOfStudy.map((year) => (
+                      <option key={year} value={year}>{year}</option>
+                    ))}
+                  </select>
                 </div>
+              </div>
+              <div>
+                <label className="block text-sm font-bold text-gray-600 uppercase tracking-wide mb-1.5">
+                  Batch
+                </label>
+                <input
+                  type="text"
+                  name="batch"
+                  value={formData.batch}
+                  onChange={handleChange}
+                  placeholder=""
+                  autoComplete="off"
+                  required
+                  className="w-full px-4 py-3 rounded-xl border border-gray-300 bg-gray-50/50 text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                />
               </div>
             </>
           ) : (

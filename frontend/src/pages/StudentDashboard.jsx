@@ -8,6 +8,35 @@ const StudentDashboard = () => {
   const navigate = useNavigate();
   const [registeredEvents, setRegisteredEvents] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editFormData, setEditFormData] = useState({
+    fullName: user.fullName || '',
+    department: user.department || '',
+    yearOfStudy: user.yearOfStudy || '',
+  });
+
+  const departments = [
+    'Computer Science', 'Mathematics', 'Physics', 'Chemistry', 'Botany', 'Microbiology', 'Commerce'
+  ];
+  const yearsOfStudy = ['First Year', 'Second Year', 'Third Year'];
+
+  const handleEditChange = (e) => {
+    setEditFormData({ ...editFormData, [e.target.name]: e.target.value });
+  };
+
+  const handleProfileSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await axios.put(`https://eventwave-t6v4.onrender.com/api/auth/profile/${user.id}`, editFormData);
+      toast.success(response.data.message || 'Profile updated successfully!');
+      localStorage.setItem('user', JSON.stringify(response.data.user));
+      setIsEditing(false);
+      window.location.reload();
+    } catch (error) {
+      console.error('Profile update error:', error);
+      toast.error(error.response?.data?.message || 'Failed to update profile.');
+    }
+  };
 
   useEffect(() => {
     const fetchRegisteredEvents = async () => {
@@ -59,28 +88,88 @@ const StudentDashboard = () => {
           {/* Profile Section */}
           <div className="lg:col-span-1">
             <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
-              <div className="flex items-center space-x-4 mb-6">
-                <div className="h-16 w-16 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 font-bold text-2xl">
-                  {user.fullName ? user.fullName.charAt(0).toUpperCase() : 'S'}
+              <div className="flex justify-between items-start mb-6">
+                <div className="flex items-center space-x-4">
+                  <div className="h-16 w-16 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 font-bold text-2xl">
+                    {user.fullName ? user.fullName.charAt(0).toUpperCase() : 'S'}
+                  </div>
+                  <div>
+                    <h2 className="text-xl font-bold text-gray-900">{user.fullName || 'Student'}</h2>
+                    <p className="text-sm text-gray-500">Register No: {user.registerNumber}</p>
+                  </div>
                 </div>
-                <div>
-                  <h2 className="text-xl font-bold text-gray-900">{user.fullName || 'Student'}</h2>
-                  <p className="text-sm text-gray-500">Register No: {user.registerNumber}</p>
-                </div>
+                {!isEditing && (
+                  <button 
+                    onClick={() => setIsEditing(true)}
+                    className="text-sm text-blue-600 hover:text-blue-800 font-medium bg-blue-50 px-3 py-1.5 rounded-lg border border-blue-100"
+                  >
+                    Edit Profile
+                  </button>
+                )}
               </div>
               
               <div className="border-t border-gray-100 pt-6">
                 <h3 className="text-lg font-semibold text-gray-800 mb-4">My Profile</h3>
-                <ul className="space-y-3 text-sm text-gray-600">
-                  <li className="flex justify-between">
-                    <span className="font-medium text-gray-500">Department</span>
-                    <span className="font-semibold text-gray-800">{user.department || 'N/A'}</span>
-                  </li>
-                  <li className="flex justify-between">
-                    <span className="font-medium text-gray-500">Batch</span>
-                    <span className="font-semibold text-gray-800">{user.batch || 'N/A'}</span>
-                  </li>
-                </ul>
+                {isEditing ? (
+                  <form onSubmit={handleProfileSubmit} autoComplete="off" className="space-y-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
+                      <input type="text" name="fullName" value={editFormData.fullName} onChange={handleEditChange} required className="w-full border border-gray-300 rounded-lg p-2.5 outline-none focus:ring-2 focus:ring-blue-500" />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Department</label>
+                      <select name="department" value={editFormData.department} onChange={handleEditChange} required className="w-full border border-gray-300 rounded-lg p-2.5 outline-none focus:ring-2 focus:ring-blue-500 bg-white">
+                        <option value="" disabled>Select Dept</option>
+                        {departments.map((dept) => (
+                          <option key={dept} value={dept}>{dept}</option>
+                        ))}
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Year of Study</label>
+                      <select name="yearOfStudy" value={editFormData.yearOfStudy} onChange={handleEditChange} required className="w-full border border-gray-300 rounded-lg p-2.5 outline-none focus:ring-2 focus:ring-blue-500 bg-white">
+                        <option value="" disabled>Select Year</option>
+                        {yearsOfStudy.map((year) => (
+                          <option key={year} value={year}>{year}</option>
+                        ))}
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Register Number (Read-only)</label>
+                      <input type="text" value={user.registerNumber} disabled className="w-full border border-gray-200 bg-gray-100 text-gray-500 rounded-lg p-2.5 cursor-not-allowed" />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Email Address (Read-only)</label>
+                      <input type="text" value="" placeholder="No email associated" disabled className="w-full border border-gray-200 bg-gray-100 text-gray-500 rounded-lg p-2.5 cursor-not-allowed" />
+                    </div>
+                    <div className="flex gap-3 pt-2">
+                      <button type="submit" className="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg font-medium transition-colors">
+                        Save Changes
+                      </button>
+                      <button type="button" onClick={() => {
+                        setIsEditing(false);
+                        setEditFormData({ fullName: user.fullName, department: user.department, yearOfStudy: user.yearOfStudy });
+                      }} className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 py-2 rounded-lg font-medium transition-colors">
+                        Cancel
+                      </button>
+                    </div>
+                  </form>
+                ) : (
+                  <ul className="space-y-3 text-sm text-gray-600">
+                    <li className="flex justify-between">
+                      <span className="font-medium text-gray-500">Department</span>
+                      <span className="font-semibold text-gray-800">{user.department || 'N/A'}</span>
+                    </li>
+                    <li className="flex justify-between">
+                      <span className="font-medium text-gray-500">Batch</span>
+                      <span className="font-semibold text-gray-800">{user.batch || 'N/A'}</span>
+                    </li>
+                    <li className="flex justify-between">
+                      <span className="font-medium text-gray-500">Year of Study</span>
+                      <span className="font-semibold text-gray-800">{user.yearOfStudy || 'N/A'}</span>
+                    </li>
+                  </ul>
+                )}
               </div>
             </div>
           </div>
