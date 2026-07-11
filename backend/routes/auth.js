@@ -37,7 +37,11 @@ router.post('/register', async (req, res) => {
       return res.status(201).json({ message: "Student registered successfully", user: { id: savedStudent._id, registerNumber: savedStudent.registerNumber } });
     
     } else if (role === 'admin') {
-      const { fullName, email } = rest;
+      const { fullName, email, secretKey } = rest;
+
+      if (secretKey !== "eventwave2026") {
+        return res.status(403).json({ message: "Invalid Admin Secret Key" });
+      }
 
       const existingAdmin = await Admin.findOne({ email });
       if (existingAdmin) {

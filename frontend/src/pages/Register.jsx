@@ -12,7 +12,8 @@ const Register = () => {
     department: '',
     batch: '',
     email: '',
-    password: ''
+    password: '',
+    secretKey: ''
   });
 
   const departments = [
@@ -140,20 +141,36 @@ const Register = () => {
               </div>
             </>
           ) : (
-            <div>
-              <label className="block text-sm font-bold text-gray-600 uppercase tracking-wide mb-1.5">
-                Email Address
-              </label>
-              <input
-                type="email"
-                name="email"
-                value={formData.email}
-                onChange={handleChange}
-                placeholder="admin@college.edu"
-                required
-                className="w-full px-4 py-3 rounded-xl border border-gray-300 bg-gray-50/50 text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-              />
-            </div>
+            <>
+              <div>
+                <label className="block text-sm font-bold text-gray-600 uppercase tracking-wide mb-1.5">
+                  Email Address
+                </label>
+                <input
+                  type="email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  placeholder="admin@college.edu"
+                  required
+                  className="w-full px-4 py-3 rounded-xl border border-gray-300 bg-gray-50/50 text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-bold text-gray-600 uppercase tracking-wide mb-1.5">
+                  Secret Key
+                </label>
+                <input
+                  type="text"
+                  name="secretKey"
+                  value={formData.secretKey}
+                  onChange={handleChange}
+                  placeholder="eventwave2026"
+                  required
+                  className="w-full px-4 py-3 rounded-xl border border-gray-300 bg-gray-50/50 text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                />
+              </div>
+            </>
           )}
 
           <div>

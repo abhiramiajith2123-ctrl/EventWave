@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { toast } from 'react-toastify';
+import jsPDF from 'jspdf';
+import 'jspdf-autotable';
 
 const AdminDashboard = () => {
   const user = JSON.parse(localStorage.getItem('user')) || {};
@@ -62,6 +64,46 @@ const AdminDashboard = () => {
     } else {
       setExpandedEventId(eventId);
     }
+  };
+
+  const downloadPDF = (event) => {
+    const doc = new jsPDF();
+    
+    // Add title
+    doc.setFontSize(18);
+    doc.text(`Registered Students - ${event.title}`, 14, 22);
+    doc.setFontSize(11);
+    doc.setTextColor(100);
+    doc.text(`Date: ${new Date(event.date).toLocaleDateString()} | Location: ${event.location}`, 14, 30);
+    
+    if (event.registeredStudents && event.registeredStudents.length > 0) {
+      const tableColumn = ["#", "Name", "Register Number", "Department", "Batch"];
+      const tableRows = [];
+
+      event.registeredStudents.forEach((student, index) => {
+        const studentData = [
+          index + 1,
+          student.fullName,
+          student.registerNumber,
+          student.department,
+          student.batch
+        ];
+        tableRows.push(studentData);
+      });
+
+      doc.autoTable({
+        head: [tableColumn],
+        body: tableRows,
+        startY: 38,
+        styles: { fontSize: 10, cellPadding: 3 },
+        headStyles: { fillColor: [66, 139, 202] }
+      });
+    } else {
+      doc.text("No students registered for this event yet.", 14, 40);
+    }
+    
+    // Save the PDF
+    doc.save(`${event.title.replace(/\s+/g, '_')}_Registrations.pdf`);
   };
 
   return (
@@ -165,7 +207,16 @@ const AdminDashboard = () => {
                     {/* Registrations List Dropdown */}
                     {expandedEventId === event._id && (
                       <div className="mt-6 bg-white rounded-xl p-5 border border-gray-200 shadow-sm">
-                        <h5 className="font-semibold text-gray-800 mb-4 border-b border-gray-100 pb-2">Registered Students</h5>
+                        <div className="flex justify-between items-center mb-4 border-b border-gray-100 pb-2">
+                          <h5 className="font-semibold text-gray-800">Registered Students</h5>
+                          <button
+                            onClick={() => downloadPDF(event)}
+                            className="text-sm bg-green-600 hover:bg-green-700 text-white font-medium px-4 py-1.5 rounded-lg shadow-sm transition-colors flex items-center gap-1"
+                          >
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                            Download PDF
+                          </button>
+                        </div>
                         {event.registeredStudents && event.registeredStudents.length > 0 ? (
                           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                             {event.registeredStudents.map((student) => (
