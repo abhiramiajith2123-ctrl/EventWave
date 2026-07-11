@@ -36,7 +36,19 @@ router.post('/register', async (req, res) => {
       });
 
       const savedStudent = await newStudent.save();
-      return res.status(201).json({ message: "Student registered successfully", user: { id: savedStudent._id, _id: savedStudent._id, registerNumber: savedStudent.registerNumber, email: savedStudent.email } });
+      return res.status(201).json({ 
+        message: "Student registered successfully", 
+        user: { 
+          id: savedStudent._id, 
+          _id: savedStudent._id, 
+          registerNumber: savedStudent.registerNumber, 
+          email: savedStudent.email,
+          fullName: savedStudent.fullName,
+          department: savedStudent.department,
+          batch: savedStudent.batch,
+          yearOfStudy: savedStudent.yearOfStudy
+        } 
+      });
     
     } else if (role === 'admin') {
       const { fullName, email, secretKey } = rest;

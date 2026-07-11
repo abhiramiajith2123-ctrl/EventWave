@@ -47,9 +47,9 @@ const Register = () => {
       localStorage.setItem('role', role);
 
       if (role === 'student') {
-        window.location.href = '/student-dashboard';
+        navigate('/student-dashboard');
       } else {
-        window.location.href = '/admin-dashboard';
+        navigate('/admin-dashboard');
       }
     } catch (error) {
       console.error('Registration error:', error);
