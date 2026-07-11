@@ -32,7 +32,7 @@ function Navigation() {
             <Link to="/" className="text-gray-600 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">Home</Link>
             {user ? (
               <Link to={getDashboardLink()} className="bg-blue-600 text-white hover:bg-blue-700 px-5 py-2 rounded-lg text-sm font-medium shadow-sm transition-colors">
-                {role === 'student' ? 'My Profile' : 'Dashboard'}
+                {role === 'student' ? 'My Profile' : 'Admin Panel'}
               </Link>
             ) : (
               <Link to="/login" className="bg-blue-600 text-white hover:bg-blue-700 px-5 py-2 rounded-lg text-sm font-medium shadow-sm transition-colors">Login</Link>
